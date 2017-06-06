@@ -17,6 +17,8 @@ $(document).ready(function() {
   var trainDest = "";
   var firstTrnTm = "";
   var frequency = 0;
+  var nxtArrive = "";
+  var tta = "";
 
 //CLOCK---------------------
   function renderTime() {
@@ -76,7 +78,7 @@ function getMin() {
 	frstTrnTm = $('#first-train-time-inpt').val().trim();
 	frequency = $('#frequency-inpt').val().trim();
 
-	var nxtArrive = nextArrival(frstTrnTm, frequency);
+	nxtArrive = nextArrival(frstTrnTm, frequency);
 
 	console.log("var: " + trainName);
 	console.log("var: " + trainDest);
@@ -92,7 +94,8 @@ function getMin() {
 		trainDest: trainDest,
 		frstTrnTm: frstTrnTm,
 		frequency: frequency,
-		nxtArrive: nxtArrive
+		nxtArrive: nxtArrive,
+		tta: tta
 	});
 
 	
@@ -123,6 +126,7 @@ function getMin() {
           // $('#frequency-display').append("<br>" + lastObj.firstTrnTm);
           $('#frequency-display').append("<br>" + lastObj.frequency + " mins");
           $('#next-arrival-display').append("<br>" + lastObj.nxtArrive);
+          $('#minutes-away-display').append("<br>" + lastObj.tta);
 
 
 
@@ -142,38 +146,64 @@ function getMin() {
 
  		var hour = parseInt(char1 + char2);
  		var minute = parseInt(char3 + char4);
+ 		var finTime = "";
+ 		var nextAHr = 0;
 
- 		// console.log("frequency: " + frequency);
- 		// console.log("hour1: " + hour);
- 		// console.log("minute1: " + minute);
+ 		if ( hour > getHour() ) {
+ 			finTime = char1 + char2 + ":" + char3 + char4;
+ 		} else if ( hour == getHour()  && minute > getMin() ) {
+ 			finTime = char1 + char2 + ":" + char3 + char4;
+ 		} else { //}
 
- 		minute = parseInt(frequency) + minute;
- 		// console.log("hour2: " + hour);
- 		// console.log("minute2: " + minute);
+ 		//calculate the next available arrival
 
- 		while (minute >= 60) {
- 			minute = minute - 60;
- 			hour = hour + 1;
+ 		minute = parseInt(freq) + minute;
 
+	 		while (minute >= 60) {
+	 			minute = minute - 60;
+	 			hour++;
+	 		}
  		}
 
- 		// console.log("hour3: " + hour);
- 		// console.log("minute3: " + minute);
-
- 		if (hour >= 24 && minute != 0) {
- 			hour = hour - 24;
- 		}
-
-
- 		var hourString = hour;
- 			if (hourString < 10) {
- 				hourString = "0" + hourString;
+ 		if ( hour >= 24 && minute != 0) {
+ 				hour = hour -24;
  			}
- 		var minString = minute;
- 			if (minString < 10) {
- 				minString = "0" + minString;
- 			}
- 		var finTime = hourString + ":" + minString;
+
+ 			// 	if  (hour < getHour() ) {
+ 			// 		while (hour < getHour() ) {
+ 			// 			minute = parseInt(freq) + minute;
+
+ 			// 			while (minute >= 60) {
+ 			// 			minute = minute - 60;
+ 			// 			hour = hour + 1;
+ 			// 		}
+ 			// 	}
+ 			// }
+ 		
+ 		var hourString = timeToString(hour);
+
+ 		var minString = timeToString(minute); 		
+
+ 		tta = calcTimeToArrive(minute, hour);
+
+ 		// if (hour >= 24 && minute != 0) {
+ 		// 	hour = hour - 24;
+ 		// }
+
+ 		// if ( hour < getHour() ) {
+
+ 		// }
+
+// //creating display of time
+//  		var hourString = hour;
+//  			if (hourString < 10) {
+//  				hourString = "0" + hourString;
+//  			}
+//  		var minString = minute;
+//  			if (minString < 10) {
+//  				minString = "0" + minString;
+//  			}
+ 		finTime = hourString + ":" + minString;
  		// console.log("time in funct: " + finTime);
 
  		return finTime;
@@ -181,6 +211,13 @@ function getMin() {
   	// $('.panel-title').html('Current Train Schedule');
     }
 
+
+    function timeToString(time) {
+    	if (time < 10) {
+ 				time = "0" + time;
+ 			}
+ 			return time;
+    }
 
 	function checkFirstTrainInput(str) {
 		console.log("str: " + str);
@@ -193,6 +230,24 @@ function getMin() {
 		}
 	}
 
+	function calcTimeToArrive(mins, hours) {
+		var timeToArrv = "";
+		if (getMin() > mins) {
+			hours = hours - 1;
+			mins = mins + 60;
+		}
+
+		if ( getHour() > hours) {
+			hours = hours + 24;			
+		}
+
+		mins = mins - getMin();
+		hours = hours - getHour();
+
+		timeToArrv = hours + " hours & " + mins + " minutes.";
+
+		return timeToArrv;
+	}
 
  // nextArrival(frstTrnTm);
 })
