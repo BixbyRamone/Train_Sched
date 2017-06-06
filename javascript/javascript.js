@@ -16,7 +16,7 @@ $(document).ready(function() {
   var trainName = "";
   var trainDest = "";
   var firstTrnTm = "";
-  var frequency = "";
+  var frequency = 0;
 
 //CLOCK---------------------
   function renderTime() {
@@ -76,23 +76,30 @@ function getMin() {
 	frstTrnTm = $('#first-train-time-inpt').val().trim();
 	frequency = $('#frequency-inpt').val().trim();
 
+	var nxtArrive = nextArrival(frstTrnTm, frequency);
 
-	console.log(trainName);
-	console.log(trainDest);
-	console.log(frstTrnTm);
-	console.log(frequency);
+	console.log("var: " + trainName);
+	console.log("var: " + trainDest);
+	console.log("var: " + frstTrnTm);
+	console.log("var: " + frequency);
+	console.log("var: " + nxtArrive);
 
+	
 	if (checkFirstTrainInput(frstTrnTm)) {
 //pushing to firebase
 	database.ref().push({
 		trainName: trainName,
 		trainDest: trainDest,
 		frstTrnTm: frstTrnTm,
-		frequency: frequency
+		frequency: frequency,
+		nxtArrive: nxtArrive
 	});
+
+	
+
 }
 	else {
-		alert("Input time in correct format")
+		alert("Input time in correct format");
 	}
 		
 
@@ -115,6 +122,7 @@ function getMin() {
           $('#destination-display').append("<br>" + lastObj.trainDest);
           // $('#frequency-display').append("<br>" + lastObj.firstTrnTm);
           $('#frequency-display').append("<br>" + lastObj.frequency + " mins");
+          $('#next-arrival-display').append("<br>" + lastObj.nxtArrive);
 
 
 
@@ -125,9 +133,51 @@ function getMin() {
 
   
 
- function nextArrival (toString) {
-    	var arrival = JSON.stringify(toString);
-    	console.log(arrival);
+ function nextArrival (arriv, freq) {
+ 		var char1 = arriv.charAt(0);
+ 		var char2 = arriv.charAt(1);
+ 		var char3 = arriv.charAt(arriv.length - 2);
+ 		var char4 = arriv.charAt(arriv.length - 1);
+ 		console.log("string check: " + char1 + ";" + char2 + ";" + char3 + ";" + char4);
+
+ 		var hour = parseInt(char1 + char2);
+ 		var minute = parseInt(char3 + char4);
+
+ 		// console.log("frequency: " + frequency);
+ 		// console.log("hour1: " + hour);
+ 		// console.log("minute1: " + minute);
+
+ 		minute = parseInt(frequency) + minute;
+ 		// console.log("hour2: " + hour);
+ 		// console.log("minute2: " + minute);
+
+ 		while (minute >= 60) {
+ 			minute = minute - 60;
+ 			hour = hour + 1;
+
+ 		}
+
+ 		// console.log("hour3: " + hour);
+ 		// console.log("minute3: " + minute);
+
+ 		if (hour >= 24 && minute != 0) {
+ 			hour = hour - 24;
+ 		}
+
+
+ 		var hourString = hour;
+ 			if (hourString < 10) {
+ 				hourString = "0" + hourString;
+ 			}
+ 		var minString = minute;
+ 			if (minString < 10) {
+ 				minString = "0" + minString;
+ 			}
+ 		var finTime = hourString + ":" + minString;
+ 		// console.log("time in funct: " + finTime);
+
+ 		return finTime;
+
   	// $('.panel-title').html('Current Train Schedule');
     }
 
