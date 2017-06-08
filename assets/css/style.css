@@ -5,3 +5,7 @@ input {
 .panel-heading {
 	width: 100%;	
 }
+
+body {
+	background-color: #f49c44;
+}
